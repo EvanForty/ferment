@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="description" content="FERMENT: a pixel farming and kimchi fermentation game. Farm. Ferment. Earn $FERMENT.">
+<meta property="og:title" content="FERMENT — Farm. Ferment. Earn $FERMENT.">
+<meta property="og:image" content="ferment-logo.png">
+<title>FERMENT — Farm. Ferment. Earn $FERMENT.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top"><img class="pixel-jar" src="ferment-logo.png" alt=""><span>FERMENT</span></a>
+    <div class="navlinks">
+      <a href="#play">Play</a>
+      <a href="#how">How it works</a>
+      <a href="#factories">Factories</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#flywheel">Flywheel</a>
+    </div>
+    <div class="navright">
+    <a class="btn ghost xbtn" href="https://x.com/PlayFerment" target="_blank" rel="noopener noreferrer" aria-label="Follow FERMENT on X (@PlayFerment)"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span class="xlabel">@PlayFerment</span></a>
+    <div class="wallet-wrap">
+      <button class="btn wallet-btn" id="walletBtn" aria-haspopup="dialog">Connect wallet</button>
+      <div class="menu px" id="walletMenu" role="menu">
+        <p id="menuAddr"></p>
+        <button class="btn ghost" id="copyAddr">Copy address</button>
+        <button class="btn" id="disconnect">Disconnect</button>
+      </div>
+    </div>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <h1><span class="row">Farm.</span><span class="row">Ferment.</span><span class="row">Earn.</span></h1>
+      <p class="lede">A pixel farming and cooking game. Grow cabbage and chili, craft kimchi recipes, let batches ferment in real time, and sell to restaurants for $FERMENT.</p>
+      <div class="ctas">
+        <button class="btn" data-connect>Connect wallet to play</button>
+        <a class="btn ghost" href="#play" style="text-decoration:none">Play now</a>
+      </div>
+    </div>
+    <div class="crock">
+      <div class="jarstage" id="jar">
+        <img class="pixel-jar" src="ferment-logo.png" alt="Pixel-art crock of kimchi, the FERMENT logo" width="324" height="360">
+        <div class="bubbles" id="bubbles" aria-hidden="true"></div>
+      </div>
+      <div class="meter px" aria-live="polite">
+        <div class="meter-top"><b id="tierName">Fresh batch</b><span id="dayCount">Day 0 of 24</span></div>
+        <div class="cells" id="cells"></div>
+        <button class="btn leaf" id="brew">Start a batch</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="block" id="play">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Play</h2>
+      <p>Your farm runs right here. Plant, craft, seal a barrel, and sell when the batch is ready. Batches keep fermenting in real time while you’re away.</p>
+    </div>
+
+    <div class="game" id="game">
+      <div class="hud px">
+        <div class="hud-main">
+          <span class="hud-label">Balance</span>
+          <b class="hud-coins"><span id="gCoins">0</span> <small>$FERMENT</small></b>
+          <span class="hud-title" id="gTitle">Kitchen hand</span>
+        </div>
+        <dl class="hud-stats">
+          <div><dt>Reward pool</dt><dd id="gPool">0</dd><i class="poolbar"><i id="gPoolBar"></i></i></div>
+          <div><dt>Burned by you</dt><dd id="gBurned">0</dd></div>
+          <div><dt>To treasury</dt><dd id="gTreasury">0</dd></div>
+          <div><dt>Lifetime earned</dt><dd id="gEarned">0</dd></div>
+        </dl>
+        <div class="hud-save">
+          <span id="gSave">Playing as guest</span>
+          <button class="linkbtn" data-act="reset">Reset farm</button>
+        </div>
+      </div>
+
+      <div class="ggrid">
+        <div class="panel px farm">
+          <div class="phead"><h3>Farm</h3><button class="btn small leaf" data-act="harvestAll">Harvest all</button></div>
+          <p class="hint">Pick a seed, then tap an empty plot. Tap a ripe crop to harvest.</p>
+          <div class="seeds" id="gSeeds" role="radiogroup" aria-label="Seed to plant"></div>
+          <div class="plots" id="gPlots"></div>
+        </div>
+
+        <div class="panel px kitchen">
+          <div class="phead"><h3>Kitchen</h3></div>
+          <div class="inv" id="gInv" aria-label="Ingredients"></div>
+          <div class="recipes" id="gRecipes"></div>
+        </div>
+
+        <div class="panel px cellar">
+          <div class="phead"><h3>Barrels</h3></div>
+          <p class="hint">One in-game day passes every 12.5 seconds. Day 24 is legendary.</p>
+          <div id="gBarrels" class="barrels"></div>
+        </div>
+
+        <div class="panel px market">
+          <div class="phead"><h3>Market</h3><button class="btn small" data-act="sellAll">Sell all</button></div>
+          <h4>Today’s restaurant orders</h4>
+          <div class="orders" id="gOrders"></div>
+          <h4>Your finished kimchi <span id="gStockCount"></span></h4>
+          <div class="stock" id="gStock"></div>
+        </div>
+
+        <div class="panel px upgrades">
+          <div class="phead"><h3>Upgrades</h3></div>
+          <p class="hint">Of every upgrade: 50% burned, 30% to the reward pool, 20% to treasury.</p>
+          <div id="gUpgrades" class="ups"></div>
+        </div>
+      </div>
+
+      <ol class="glog" id="gLog" aria-live="polite"></ol>
+      <p class="gnote">Balances in this demo are in-game only and are saved in this browser, per connected wallet. Nothing is sent on-chain.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>From seed to sale</h2>
+      <p>Every batch runs through the same five stages. Patience pays: the longer a crock ferments, the better it sells.</p>
+    </div>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Farm</h3><p>Plant napa cabbage, chili peppers, garlic, scallions and more. Each crop has its own grow time and yield.</p></li>
+      <li><span class="n">2</span><h3>Craft</h3><p>Combine ingredients into kimchi recipes. Rare combinations produce rare recipes worth more at market.</p></li>
+      <li><span class="n">3</span><h3>Ferment</h3><p>Seal the batch and let it work in real time. Longer fermentation unlocks higher-quality kimchi and bigger rewards.</p></li>
+      <li><span class="n">4</span><h3>Earn</h3><p>Sell finished kimchi to NPC restaurants and fill daily orders to earn $FERMENT.</p></li>
+      <li><span class="n">5</span><h3>Upgrade</h3><p>Spend $FERMENT on bigger farms, better barrels, factories, and automated production lines.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="factories">
+  <div class="wrap factory">
+    <div class="copy sec-head" style="margin-bottom:0">
+      <h2>Automated fermentation factories</h2>
+      <p>Build a factory and it keeps producing kimchi while you’re away. Factories unlock rare recipes and let you scale far past what hand-sealed crocks can manage.</p>
+      <p>Each tier costs progressively more $FERMENT to unlock, so the biggest producers are also the biggest spenders.</p>
+    </div>
+    <div>
+      <div class="tiers" role="img" aria-label="Four factory tiers, each costing more than the last">
+        <div class="tier"><div class="bar" style="height:60px"></div><b>Crock shed</b><small>Hand-sealed batches</small></div>
+        <div class="tier"><div class="bar" style="height:110px"></div><b>Barrel cellar</b><small>Bigger, longer ferments</small></div>
+        <div class="tier"><div class="bar" style="height:170px"></div><b>Factory</b><small>Runs on its own</small></div>
+        <div class="tier"><div class="bar" style="height:240px"></div><b>Auto line</b><small>Rare recipes at scale</small></div>
+      </div>
+      <p class="tiers-note">Bar height shows relative unlock cost in $FERMENT.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="tokenomics">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Where upgrade spending goes</h2>
+      <p>Every $FERMENT spent on upgrades is split three ways the moment it’s paid.</p>
+    </div>
+    <div class="split" id="split" role="img" aria-label="50% burned, 30% to the reward pool, 20% to development and treasury"></div>
+    <div class="legend">
+      <div class="b"><strong>50%</strong><p>Burned permanently, removing it from supply.</p></div>
+      <div class="r"><strong>30%</strong><p>Returned to the player reward pool that pays out for orders and sales.</p></div>
+      <div class="d"><strong>20%</strong><p>Funds development, seasonal events, and the treasury.</p></div>
+    </div>
+    <p class="cap px">The reward pool is capped and emissions are paced, so rewards are paid from a fixed budget topped up by player spending rather than minted without limit.</p>
+  </div>
+</section>
+
+<section class="block" id="flywheel">
+  <div class="wrap wheel">
+    <svg viewBox="0 0 560 520" role="img" aria-label="Flywheel: more players, more production, more upgrades, more burns, more rewards, back to more players">
+      <g id="arcs"></g>
+      <image href="ferment-logo.png" x="232" y="200" width="96" height="107" style="image-rendering:pixelated"/>
+      <text x="280" y="340" text-anchor="middle" font-size="34">$FERMENT</text>
+      <g id="nodes"></g>
+    </svg>
+    <div>
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2>The flywheel</h2>
+      </div>
+      <p class="thesis">More players means more production. More production drives more upgrades. Upgrades burn $FERMENT and refill the reward pool, which gives the token more use and draws in <strong>more players</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block closing">
+  <div class="wrap">
+    <img class="pixel-jar" src="ferment-logo.png" alt="">
+    <h2>Become the Fermentation King</h2>
+    <p>Climb the global leaderboards, unlock legendary recipes, and build the biggest kimchi operation on Solana.</p>
+    <button class="btn" data-connect>Connect wallet</button>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>FERMENT, the ferment-to-earn game on Solana</span>
+    <span>$FERMENT is an in-game token. Nothing here is financial advice.</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="sheet px">
+    <h3 id="mTitle">Connect a wallet</h3>
+    <p>Choose a Solana wallet. FERMENT only asks for your public address.</p>
+    <div class="wlist" id="wlist"></div>
+    <button class="btn ghost close" id="mClose">Cancel</button>
+  </div>
+</div>
+<div class="toast px" id="toast" role="status"></div>
+
+<script src="main.js"></script>
+
+<script src="game.js"></script>
+</body>
+</html>
